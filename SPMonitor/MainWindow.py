@@ -9,7 +9,7 @@ from SPMonitor.Notebook import Notebook
 
 class MainWindow(Gtk.Window):
 
-    def __init__(self, client):
+    def __init__(self):
 
         Gtk.Window.__init__(self, title='SPMonitor')
         self.set_border_width(3)
