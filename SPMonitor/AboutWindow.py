@@ -34,7 +34,6 @@ class AboutWindow(Gtk.AboutDialog):
 
             pass
 
-
         self.set_website('https://github.com/bond-anton/SPMonitor')
         self.set_comments('Monitors activity of SP Database')
         self.add_credit_section('Created by', ['Anton Bondarenko'])
