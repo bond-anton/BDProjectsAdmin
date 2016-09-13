@@ -1,23 +1,69 @@
 from __future__ import division, print_function
 
+from os.path import dirname, realpath, join
+
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gio
+from gi.repository import GLib, Gio, Gtk
 
 from ScientificProjects.Client import Client
 from SPMonitor.MainWindow import MainWindow
+from SPMonitor.AboutWindow import AboutWindow
 
 
 class SPMApplication(Gtk.Application):
+    def __init__(self, *args, **kwargs):
+        #self.client = kwargs['client']
+        super(SPMApplication, self).__init__(*args, application_id="org.projectx.spmonitor",
+                                             flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE,
+                                             **kwargs)
+        self.window = None
 
-    def __init__(self, client):
-        assert isinstance(client, Client), 'Valid SP Client expected'
-        self.client = client
-        Gtk.Application.__init__(self, application_id='apps.projectx.pmmonitor',
-                                 flags=Gio.ApplicationFlags.FLAGS_NONE)
-        self.connect('activate', self.on_activate)
+        self.add_main_option("test", ord("t"), GLib.OptionFlags.NONE,
+                             GLib.OptionArg.NONE, "Command line test", None)
 
-    def on_activate(self, data=None):
-        window = MainWindow()
-        window.show_all()
-        self.add_window(window)
+    def do_startup(self):
+        dir_path = join(dirname(realpath(__file__)), 'xml')
+        menu_ui_file = join(dir_path, 'app_menu.glade')
+
+        Gtk.Application.do_startup(self)
+
+        action = Gio.SimpleAction.new("about", None)
+        action.connect("activate", self.on_about)
+        self.add_action(action)
+
+        action = Gio.SimpleAction.new("quit", None)
+        action.connect("activate", self.on_quit)
+        self.add_action(action)
+
+        builder = Gtk.Builder.new_from_file(menu_ui_file)
+        self.set_app_menu(builder.get_object("app-menu"))
+
+    def do_activate(self):
+        # We only allow a single window and raise any existing ones
+        if not self.window:
+            # Windows are associated with the application
+            # when the last one is closed the application shuts down
+            self.window = MainWindow(application=self, title="SPMonitor")
+            self.window.set_default_icon_name('utilities-system-monitor')
+            self.window.set_default_size(640, 480)
+        self.window.show_all()
+        self.window.present()
+
+    def do_command_line(self, command_line):
+        options = command_line.get_options_dict()
+
+        if options.contains("test"):
+            # This is printed on the main instance
+            print("Test argument recieved")
+
+        self.activate()
+        return 0
+
+    def on_about(self, action, param):
+        about_dialog = AboutWindow(transient_for=self.window, modal=True)
+        about_dialog.show_all()
+        about_dialog.present()
+
+    def on_quit(self, action, param):
+        self.quit()
