@@ -9,6 +9,7 @@ from gi.repository import GLib, Gio, Gtk
 from ScientificProjects.Client import Client
 from SPMonitor.MainWindow import MainWindow
 from SPMonitor.AboutWindow import AboutWindow
+from SPMonitor.PreferencesDialog import PreferencesDialog
 
 
 class SPMApplication(Gtk.Application):
@@ -27,6 +28,10 @@ class SPMApplication(Gtk.Application):
         menu_ui_file = join(dir_path, 'app_menu.glade')
 
         Gtk.Application.do_startup(self)
+
+        action = Gio.SimpleAction.new("preferences", None)
+        action.connect("activate", self.on_preferences)
+        self.add_action(action)
 
         action = Gio.SimpleAction.new("about", None)
         action.connect("activate", self.on_about)
@@ -52,7 +57,6 @@ class SPMApplication(Gtk.Application):
 
     def do_command_line(self, command_line):
         options = command_line.get_options_dict()
-
         if options.contains("test"):
             # This is printed on the main instance
             print("Test argument recieved")
@@ -64,6 +68,21 @@ class SPMApplication(Gtk.Application):
         about_dialog = AboutWindow(transient_for=self.window, modal=True)
         about_dialog.show_all()
         about_dialog.present()
+
+    def on_preferences(self, action, param):
+        preferences_dialog = PreferencesDialog(self.window)
+        preferences_dialog.show_all()
+        preferences_dialog.present()
+        preferences_dialog.read_in_config()
+        response = preferences_dialog.run()
+
+        if response == Gtk.ResponseType.OK:
+            print("The OK button was clicked")
+            preferences_dialog.save_config()
+        elif response == Gtk.ResponseType.CANCEL:
+            print("The Cancel button was clicked")
+
+        preferences_dialog.destroy()
 
     def on_quit(self, action, param):
         self.quit()
