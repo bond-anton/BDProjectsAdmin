@@ -13,7 +13,6 @@ _version = '0.0.1'
 class AboutWindow(Gtk.AboutDialog):
 
     def __init__(self, *args, **kwargs):
-
         super(AboutWindow, self).__init__(*args, **kwargs)
         self.set_program_name('SPMonitor')
         self.set_version(_version)
@@ -31,9 +30,7 @@ class AboutWindow(Gtk.AboutDialog):
         except IOError:
             self.set_copyright('Copyright © 2016 Anton Bondarenko' +
                                '\nLicensed under the Apache License, Version 2.0')
-
             pass
-
         self.set_website('https://github.com/bond-anton/SPMonitor')
         self.set_comments('Monitors activity of SP Database')
         self.add_credit_section('Created by', ['Anton Bondarenko'])

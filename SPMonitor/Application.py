@@ -8,7 +8,7 @@ from gi.repository import GLib, Gio, Gtk
 
 from ScientificProjects.Client import Client
 from SPMonitor.MainWindow import MainWindow
-from SPMonitor.AboutWindow import AboutWindow
+from SPMonitor.AboutWindow import AboutWindow, _version
 from SPMonitor.PreferencesDialog import PreferencesDialog
 
 
@@ -22,6 +22,8 @@ class SPMApplication(Gtk.Application):
 
         self.add_main_option("test", ord("t"), GLib.OptionFlags.NONE,
                              GLib.OptionArg.NONE, "Command line test", None)
+        self.add_main_option("version", ord("v"), GLib.OptionFlags.NONE,
+                             GLib.OptionArg.NONE, "Print version", None)
 
     def do_startup(self):
         dir_path = join(dirname(realpath(__file__)), 'xml')
@@ -50,9 +52,6 @@ class SPMApplication(Gtk.Application):
             # Windows are associated with the application
             # when the last one is closed the application shuts down
             self.window = MainWindow(application=self, title="SPMonitor")
-            self.window.set_default_icon_name('utilities-system-monitor')
-            self.window.set_default_size(640, 480)
-        self.window.show_all()
         self.window.present()
 
     def do_command_line(self, command_line):
@@ -60,6 +59,9 @@ class SPMApplication(Gtk.Application):
         if options.contains("test"):
             # This is printed on the main instance
             print("Test argument recieved")
+        if options.contains("version"):
+            # This is printed on the main instance
+            print("SPMonitor v%s" % _version)
         else:
             self.activate()
         return 0

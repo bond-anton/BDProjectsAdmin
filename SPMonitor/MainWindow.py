@@ -36,7 +36,9 @@ class MainWindow(Gtk.ApplicationWindow):
 
         self.notebook = Notebook()
         self.add(self.notebook)
-        self.notebook.show()
+        self.set_default_icon_name('utilities-system-monitor')
+        self.set_default_size(640, 480)
+        self.show_all()
 
     def on_change_label_state(self, action, value):
         action.set_state(value)
