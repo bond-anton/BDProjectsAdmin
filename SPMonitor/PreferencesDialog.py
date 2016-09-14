@@ -85,8 +85,13 @@ class PreferencesDialog(Gtk.Dialog):
         self.db_name.set_text(config['db_name'])
         self.db_backend.set_text(config['backend'])
         self.db_host.set_text(config['host'])
+        port = config['port']
         try:
-            self.db_port.set_value(config['port'])
+            port = int(port)
+        except ValueError:
+            pass
+        try:
+            self.db_port.set_value(port)
         except TypeError:
             pass
         self.db_user.set_text(config['user'])
@@ -98,7 +103,7 @@ class PreferencesDialog(Gtk.Dialog):
         config['db_name'] = self.db_name.get_text()
         config['backend'] = self.db_backend.get_text()
         config['host'] = self.db_host.get_text()
-        config['port'] = self.db_port.get_value()
+        config['port'] = int(self.db_port.get_value())
         config['user'] = self.db_user.get_text()
         config['password'] = self.db_password.get_text()
 
