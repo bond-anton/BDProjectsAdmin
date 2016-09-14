@@ -60,8 +60,8 @@ class SPMApplication(Gtk.Application):
         if options.contains("test"):
             # This is printed on the main instance
             print("Test argument recieved")
-
-        self.activate()
+        else:
+            self.activate()
         return 0
 
     def on_about(self, action, param):
