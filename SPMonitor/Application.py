@@ -56,7 +56,7 @@ class SPMApplication(Gtk.Application):
             # Windows are associated with the application
             # when the last one is closed the application shuts down
             self.window = MainWindow(application=self, title="SPMonitor")
-            self.window.connect("destroy", self.on_quit)
+            self.window.connect("delete-event", self.on_quit)
         self.window.present()
 
     def do_command_line(self, command_line):
