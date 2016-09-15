@@ -16,7 +16,7 @@ class Notebook(Gtk.Notebook):
         self.page1.set_row_homogeneous(True)
         self.logs_treeview = LogTreeView()
         self.page1.attach(self.logs_treeview, 0, 0, 8, 10)
-        self.append_page(self.page1, Gtk.Label('Logs'))
+        self.append_page(self.page1, Gtk.Label('Log'))
 
         self.page2 = Gtk.Grid()
         self.page2.set_column_homogeneous(True)

@@ -2,6 +2,9 @@ from __future__ import division, print_function
 
 from os.path import dirname, realpath, join
 
+import time
+import threading
+
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import GLib, Gio, Gtk
@@ -13,6 +16,7 @@ from SPMonitor.PreferencesDialog import PreferencesDialog
 
 
 class SPMApplication(Gtk.Application):
+
     def __init__(self, *args, **kwargs):
         #self.client = kwargs['client']
         super(SPMApplication, self).__init__(*args, application_id="org.projectx.spmonitor",
@@ -52,6 +56,7 @@ class SPMApplication(Gtk.Application):
             # Windows are associated with the application
             # when the last one is closed the application shuts down
             self.window = MainWindow(application=self, title="SPMonitor")
+            self.window.connect("destroy", self.on_quit)
         self.window.present()
 
     def do_command_line(self, command_line):
@@ -87,4 +92,19 @@ class SPMApplication(Gtk.Application):
         preferences_dialog.destroy()
 
     def on_quit(self, action, param):
+        print('Doing cleanup!')
         self.quit()
+
+    def update_loop(self):
+
+        def update():
+            print('Hello')
+
+        def example_target():
+            while True:
+                GLib.idle_add(update)
+                time.sleep(2)
+
+        thread = threading.Thread(target=example_target)
+        thread.daemon = True
+        thread.start()
