@@ -18,10 +18,10 @@ from SPMonitor.PreferencesDialog import PreferencesDialog
 class SPMApplication(Gtk.Application):
 
     def __init__(self, *args, **kwargs):
-        #self.client = kwargs['client']
         super(SPMApplication, self).__init__(*args, application_id="org.projectx.spmonitor",
                                              flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE,
                                              **kwargs)
+        self.client = None
         self.window = None
 
         self.add_main_option("test", ord("t"), GLib.OptionFlags.NONE,
@@ -58,6 +58,8 @@ class SPMApplication(Gtk.Application):
             self.window = MainWindow(application=self, title="SPMonitor")
             self.window.connect("delete-event", self.on_quit)
         self.window.present()
+        self.client = Client(config_file_name='config.ini')
+        self.update_loop()
 
     def do_command_line(self, command_line):
         options = command_line.get_options_dict()
@@ -73,16 +75,12 @@ class SPMApplication(Gtk.Application):
 
     def on_about(self, action, param):
         about_dialog = AboutWindow(transient_for=self.window, modal=True)
-        about_dialog.show_all()
         about_dialog.present()
 
     def on_preferences(self, action, param):
         preferences_dialog = PreferencesDialog(self.window)
-        preferences_dialog.show_all()
         preferences_dialog.present()
-        preferences_dialog.read_in_config()
         response = preferences_dialog.run()
-
         if response == Gtk.ResponseType.OK:
             print("The OK button was clicked")
             preferences_dialog.save_config()

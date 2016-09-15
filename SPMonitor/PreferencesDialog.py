@@ -79,6 +79,7 @@ class PreferencesDialog(Gtk.Dialog):
         vbox_right.pack_start(self.db_password, True, True, 0)
 
         self.show_all()
+        self.read_in_config()
 
     def read_in_config(self):
         config = read_config(self.config_file_name)

@@ -6,10 +6,5 @@ from gi.repository import Gtk
 
 from SPMonitor import SPMApplication
 
-from ScientificProjects.Client import Client
-
-client = Client(config_file_name='config.ini')
-
-app = SPMApplication()#client=client)
-app.update_loop()
+app = SPMApplication()
 app.run(sys.argv)
