@@ -1,6 +1,7 @@
 from __future__ import division, print_function
 
-from os.path import dirname, realpath, join
+from os import pardir
+from os.path import dirname, realpath, join, isfile
 
 import time
 import threading
@@ -28,6 +29,9 @@ class SPMApplication(Gtk.Application):
                              GLib.OptionArg.NONE, "Command line test", None)
         self.add_main_option("version", ord("v"), GLib.OptionFlags.NONE,
                              GLib.OptionArg.NONE, "Print version", None)
+
+        dir_path = join(dirname(realpath(__file__)), pardir)
+        self.config_file_name = join(dir_path, 'config.ini')
 
     def do_startup(self):
         dir_path = join(dirname(realpath(__file__)), 'xml')
@@ -58,7 +62,11 @@ class SPMApplication(Gtk.Application):
             self.window = MainWindow(application=self, title="SPMonitor")
             self.window.connect("delete-event", self.on_quit)
         self.window.present()
-        self.client = Client(config_file_name='config.ini')
+        try:
+            self.client = Client(config_file_name=self.config_file_name)
+        except (ValueError, IOError):
+            print('Config file error catched')
+            self.on_preferences(None, None)
         self.update_loop()
 
     def do_command_line(self, command_line):
@@ -78,7 +86,7 @@ class SPMApplication(Gtk.Application):
         about_dialog.present()
 
     def on_preferences(self, action, param):
-        preferences_dialog = PreferencesDialog(self.window)
+        preferences_dialog = PreferencesDialog(self.window, config_file_name=self.config_file_name)
         preferences_dialog.present()
         response = preferences_dialog.run()
         if response == Gtk.ResponseType.OK:

@@ -1,7 +1,5 @@
 # coding=utf-8
 from __future__ import division, print_function
-from os import pardir
-from os.path import dirname, realpath, join
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import GLib, Gio, Gtk
@@ -11,15 +9,11 @@ from ScientificProjects.Config import read_config, write_config
 
 class PreferencesDialog(Gtk.Dialog):
 
-    def __init__(self, parent):
-
-        dir_path = join(dirname(realpath(__file__)), pardir)
-        self.config_file_name = join(dir_path, 'config.ini')
-
+    def __init__(self, parent, config_file_name):
+        self.config_file_name = config_file_name
         Gtk.Dialog.__init__(self, 'Preferences', parent, 0,
                             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
                              Gtk.STOCK_OK, Gtk.ResponseType.OK))
-
         self.set_default_size(150, 100)
         self.set_border_width(6)
         label = Gtk.Label("Database settings")
@@ -28,7 +22,6 @@ class PreferencesDialog(Gtk.Dialog):
         box.set_spacing(15)
 
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=15)
-
         box.add(hbox)
 
         vbox_left = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
@@ -79,33 +72,36 @@ class PreferencesDialog(Gtk.Dialog):
         vbox_right.pack_start(self.db_password, True, True, 0)
 
         self.show_all()
+        self.config = None
         self.read_in_config()
 
     def read_in_config(self):
-        config = read_config(self.config_file_name)
-        self.db_name.set_text(config['db_name'])
-        self.db_backend.set_text(config['backend'])
-        self.db_host.set_text(config['host'])
-        port = config['port']
         try:
-            port = int(port)
-        except ValueError:
-            pass
-        try:
-            self.db_port.set_value(port)
-        except TypeError:
-            pass
-        self.db_user.set_text(config['user'])
-        self.db_password.set_text(config['password'])
+            self.config = read_config(self.config_file_name)
+            self.db_name.set_text(self.config['db_name'])
+            self.db_backend.set_text(self.config['backend'])
+            self.db_host.set_text(self.config['host'])
+            port = self.config['port']
+            try:
+                port = int(port)
+                self.config['port'] = port
+            except ValueError:
+                if self.config['port'] == '':
+                    self.config['port'] = 0
+                pass
+            try:
+                self.db_port.set_value(port)
+            except TypeError:
+                pass
+            self.db_user.set_text(self.config['user'])
+            self.db_password.set_text(self.config['password'])
+        except (IOError, ValueError):
+            self.config = None
 
     def save_config(self):
-
-        config = {}
-        config['db_name'] = self.db_name.get_text()
-        config['backend'] = self.db_backend.get_text()
-        config['host'] = self.db_host.get_text()
-        config['port'] = int(self.db_port.get_value())
-        config['user'] = self.db_user.get_text()
-        config['password'] = self.db_password.get_text()
-
-        write_config(config, self.config_file_name)
+        config = {'db_name': self.db_name.get_text(), 'backend': self.db_backend.get_text(),
+                  'host': self.db_host.get_text(), 'port': int(self.db_port.get_value()),
+                  'user': self.db_user.get_text(), 'password': self.db_password.get_text()}
+        if config != self.config:
+            print('config changed')
+            write_config(config, self.config_file_name)
