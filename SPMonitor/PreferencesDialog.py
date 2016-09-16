@@ -105,3 +105,5 @@ class PreferencesDialog(Gtk.Dialog):
         if config != self.config:
             print('config changed')
             write_config(config, self.config_file_name)
+            return True
+        return False

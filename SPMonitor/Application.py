@@ -4,16 +4,15 @@ from os import pardir
 from os.path import dirname, realpath, join, isfile
 
 import time
-import threading
 
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import GLib, Gio, Gtk
 
-from ScientificProjects.Client import Client
 from SPMonitor.MainWindow import MainWindow
 from SPMonitor.AboutWindow import AboutWindow, _version
 from SPMonitor.PreferencesDialog import PreferencesDialog
+from SPMonitor.Monitor import ClientThread
 
 
 class SPMApplication(Gtk.Application):
@@ -62,12 +61,7 @@ class SPMApplication(Gtk.Application):
             self.window = MainWindow(application=self, title="SPMonitor")
             self.window.connect("delete-event", self.on_quit)
         self.window.present()
-        try:
-            self.client = Client(config_file_name=self.config_file_name)
-        except (ValueError, IOError):
-            print('Config file error catched')
-            self.on_preferences(None, None)
-        self.update_loop()
+        self.restart_client_loop()
 
     def do_command_line(self, command_line):
         options = command_line.get_options_dict()
@@ -91,26 +85,37 @@ class SPMApplication(Gtk.Application):
         response = preferences_dialog.run()
         if response == Gtk.ResponseType.OK:
             print("The OK button was clicked")
-            preferences_dialog.save_config()
+            need_clent_restart = preferences_dialog.save_config()
+            preferences_dialog.destroy()
+            if need_clent_restart:
+                self.restart_client_loop()
         elif response == Gtk.ResponseType.CANCEL:
             print("The Cancel button was clicked")
-
-        preferences_dialog.destroy()
+            preferences_dialog.destroy()
+            if self.client is None:
+                self.start_client_loop()
 
     def on_quit(self, action, param):
         print('Doing cleanup!')
+        self.stop_client_loop()
         self.quit()
 
-    def update_loop(self):
+    def restart_client_loop(self):
+        self.stop_client_loop()
+        self.start_client_loop()
 
-        def update():
-            print('Hello')
+    def start_client_loop(self):
+        if self.client is None:
+            print('Starting client loop')
+            try:
+                self.client = ClientThread(config_file_name=self.config_file_name)
+                self.client.start()
+            except ValueError:
+                print('Config file error reported by ClientThread')
+                self.on_preferences(None, None)
 
-        def example_target():
-            while True:
-                GLib.idle_add(update)
-                time.sleep(2)
-
-        thread = threading.Thread(target=example_target)
-        thread.daemon = True
-        thread.start()
+    def stop_client_loop(self):
+        if self.client is not None:
+            print('Stopping client loop')
+            self.client.join()
+            self.client = None
