@@ -6,8 +6,9 @@ from ScientificProjects.Client import Client
 
 class ClientThread(threading.Thread):
 
-    def __init__(self, config_file_name):
-        self.config_file_name=config_file_name
+    def __init__(self, config_file_name, log_treeview):
+        self.config_file_name = config_file_name
+        self.log_treeview = log_treeview
         try:
             self.client = Client(config_file_name=self.config_file_name)
         except (ValueError, IOError):
@@ -21,8 +22,11 @@ class ClientThread(threading.Thread):
         self.client.user_manager.sign_out()
         while not self.stop_request.isSet():
             print('Hello')
+            self.log_treeview.add_record(('date', 'cat', 'user', 'project', 'message'))
             time.sleep(2)
 
     def join(self, timeout=None, balancing=True):
         self.stop_request.set()
+        self.client.session.close()
+        self.client.engine.dispose()
         super(ClientThread, self).join(timeout, balancing=balancing)

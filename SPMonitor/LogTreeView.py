@@ -9,26 +9,13 @@ class LogTreeView(Gtk.Box):
 
     def __init__(self):
         super(LogTreeView, self).__init__(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        column_titles = ['Date', 'Type', 'User', 'Project', 'Message']
 
-        software_list = [("Firefox", 2002, "C++"),
-                         ("Eclipse", 2004, "Java"),
-                         ("Pitivi", 2004, "Python"),
-                         ("Netbeans", 1996, "Java"),
-                         ("Chrome", 2008, "C++"),
-                         ("Filezilla", 2001, "C++"),
-                         ("Bazaar", 2005, "Python"),
-                         ("Git", 2005, "C"),
-                         ("Linux Kernel", 1991, "C"),
-                         ("GCC", 1987, "C"),
-                         ("Frostwire", 2004, "Java")]
-
-        self.software_liststore = Gtk.ListStore(str, int, str)
-        for software_ref in software_list:
-            self.software_liststore.append(list(software_ref))
+        self.log_liststore = Gtk.ListStore(str, str, str, str, str)
 
         # creating the treeview, making it use the filter as a model, and adding the columns
-        self.treeview = Gtk.TreeView(self.software_liststore)
-        for i, column_title in enumerate(["Software", "Release Year", "Programming Language"]):
+        self.treeview = Gtk.TreeView(self.log_liststore)
+        for i, column_title in enumerate(column_titles):
             renderer = Gtk.CellRendererText()
             column = Gtk.TreeViewColumn(column_title, renderer, text=i)
             self.treeview.append_column(column)
@@ -101,6 +88,9 @@ class LogTreeView(Gtk.Box):
 
         self.pack_start(hbox, False, False, 0)
         self.pack_start(scrolled_window, True, True, 0)
+
+    def add_record(self, record):
+        self.log_liststore.append(list(record))
 
     def on_selection_button_clicked(self, widget):
         """Called on any of the button clicks"""
