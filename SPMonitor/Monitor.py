@@ -32,6 +32,7 @@ class ClientThread(threading.Thread):
             self.dst_offset = self.std_offset
 
     def run(self):
+        time.sleep(2)
         self.client.user_manager.sign_in('john_smith', 'secret_password')
         self.client.user_manager.sign_out()
         while not self.stop_request.isSet():
@@ -50,9 +51,9 @@ class ClientThread(threading.Thread):
                 self.log_treeview.add_record((date, record.category.category,
                                               record.session.user.login, project, record.record))
             time.sleep(2)
+        self.client.session.close()
+        self.client.engine.dispose()
 
     def join(self, timeout=None, balancing=True):
         self.stop_request.set()
-        self.client.session.close()
-        self.client.engine.dispose()
-        super(ClientThread, self).join(timeout, balancing=balancing)
+        super(ClientThread, self).join(timeout)
