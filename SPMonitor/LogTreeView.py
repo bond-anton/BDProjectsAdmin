@@ -11,13 +11,14 @@ class LogTreeView(Gtk.Box):
         super(LogTreeView, self).__init__(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         column_titles = ['Date', 'Type', 'User', 'Project', 'Message']
 
-        self.log_liststore = Gtk.ListStore(str, str, str, str, str)
+        self.log_liststore = Gtk.ListStore(str, str, str, str, str, str, str, bool)
 
         # creating the treeview, making it use the filter as a model, and adding the columns
         self.treeview = Gtk.TreeView(self.log_liststore)
         for i, column_title in enumerate(column_titles):
             renderer = Gtk.CellRendererText()
-            column = Gtk.TreeViewColumn(column_title, renderer, text=i)
+            column = Gtk.TreeViewColumn(column_title, renderer, text=i,
+                                        foreground=5, background=6, foreground_set=7, background_set=7)
             self.treeview.append_column(column)
 
         # setting up the layout, putting the treeview in a scrollwindow, and the buttons in a row
