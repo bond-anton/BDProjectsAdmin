@@ -25,7 +25,7 @@ class LogTreeView(Gtk.Box):
         scrolled_window.set_vexpand(True)
         scrolled_window.add(self.treeview)
 
-        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         hbox.set_border_width(6)
 
         button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
@@ -33,11 +33,12 @@ class LogTreeView(Gtk.Box):
         self.buttons = dict()
         for log_type in ['Error', 'Warning', 'Information']:
             grid = Gtk.Grid()
+            grid.set_column_spacing(5)
             button = Gtk.ToggleButton()
             img = Gtk.Image.new_from_icon_name('dialog-' + log_type.lower(), Gtk.IconSize.BUTTON)
             label = Gtk.Label(log_type)
             grid.attach(img, 0, 0, 1, 1)
-            grid.attach(label, 0, 1, 1, 1)
+            grid.attach(label, 1, 0, 1, 1)
             grid.show_all()
             button.add(grid)
             button.set_active(True)
@@ -46,27 +47,20 @@ class LogTreeView(Gtk.Box):
             button_box.pack_start(button, False, True, 0)
         button = Gtk.Button()
         grid = Gtk.Grid()
+        grid.set_column_spacing(5)
         img = Gtk.Image.new_from_icon_name('view-refresh', Gtk.IconSize.BUTTON)
         label = Gtk.Label('All')
         grid.attach(img, 0, 0, 1, 1)
-        grid.attach(label, 0, 1, 1, 1)
+        grid.attach(label, 1, 0, 1, 1)
         grid.show_all()
         button.add(grid)
-        button.set_label('All')
+        #button.set_label('All')
         self.buttons['All'] = button
         button.connect('clicked', self.on_selection_button_clicked)
         button_box.pack_start(button, False, True, 0)
 
-        pager_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
-        label = Gtk.Label("1")
-        pager_box.pack_start(label, False, True, 0)
-        label = Gtk.Label("-")
-        pager_box.pack_start(label, False, True, 0)
-        label = Gtk.Label("10")
-        pager_box.pack_start(label, False, True, 0)
-        label = Gtk.Label("of")
-        pager_box.pack_start(label, False, True, 0)
-        label = Gtk.Label('1000')
+        pager_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
+        label = Gtk.Label('1 - 10 of 1000 ')
         pager_box.pack_start(label, False, True, 0)
         pager_box.set_halign(Gtk.Align.END)
 
@@ -86,11 +80,11 @@ class LogTreeView(Gtk.Box):
         hbox.pack_start(button_box, False, True, 0)
         hbox.pack_start(pager_box, True, True, 0)
 
-        self.pack_start(hbox, False, False, 0)
         self.pack_start(scrolled_window, True, True, 0)
+        self.pack_start(hbox, False, False, 0)
 
     def add_record(self, record):
-        self.log_liststore.append(list(record))
+        self.log_liststore.insert(0, list(record))
 
     def on_selection_button_clicked(self, widget):
         """Called on any of the button clicks"""
