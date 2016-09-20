@@ -17,13 +17,11 @@ class ClientThread(threading.Thread):
         self.stop_request = threading.Event()
 
     def run(self):
+        self.client.user_manager.sign_in('john_smith', 'secret_password')
+        self.client.user_manager.sign_out()
         while not self.stop_request.isSet():
-            self.client.user_manager.sign_in('john_smith', 'secret_password')
             print('Hello')
             time.sleep(2)
-            self.client.user_manager.sign_out()
-            time.sleep(1)
-        self.client.user_manager.sign_out()
 
     def join(self, timeout=None, balancing=True):
         self.stop_request.set()
