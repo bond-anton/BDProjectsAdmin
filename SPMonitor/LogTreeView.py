@@ -35,7 +35,6 @@ class LogTreeView(Gtk.Box):
         self.scrolled_window = Gtk.ScrolledWindow()
         self.scrolled_window.set_vexpand(True)
         self.scrolled_window.add(self.treeview)
-        self.scrolled_window_pos = 0
 
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         hbox.set_border_width(6)

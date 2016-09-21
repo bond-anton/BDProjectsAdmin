@@ -5,6 +5,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 from SPMonitor.LogTreeView import LogTreeView
+from SPMonitor.SessionsTreeView import SessionsTreeView
 
 class Notebook(Gtk.Notebook):
 
@@ -21,6 +22,6 @@ class Notebook(Gtk.Notebook):
         self.page2 = Gtk.Grid()
         self.page2.set_column_homogeneous(True)
         self.page2.set_row_homogeneous(True)
-        self.sessions_treeview = LogTreeView()
+        self.sessions_treeview = SessionsTreeView()
         self.page2.attach(self.sessions_treeview, 0, 0, 8, 10)
         self.append_page(self.page2, Gtk.Label('Sessions'))

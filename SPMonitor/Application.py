@@ -109,7 +109,8 @@ class SPMApplication(Gtk.Application):
             print('Starting client loop')
             try:
                 self.client = ClientThread(config_file_name=self.config_file_name,
-                                           log_treeview=self.window.notebook.logs_treeview)
+                                           log_treeview=self.window.notebook.logs_treeview,
+                                           sessions_treeview=self.window.notebook.sessions_treeview)
                 self.client.start()
             except ValueError:
                 print('Config file error reported by ClientThread')

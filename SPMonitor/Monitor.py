@@ -11,10 +11,11 @@ from ScientificProjects.Entities.Log import Log
 
 class ClientThread(threading.Thread):
 
-    def __init__(self, config_file_name, log_treeview):
+    def __init__(self, config_file_name, log_treeview, sessions_treeview):
         self.start_datetime = datetime.datetime.utcnow()
         self.last_log_id = 0
         self.config_file_name = config_file_name
+        self.sessions_treeview = sessions_treeview
         self.log_treeview = log_treeview
         self.categories = ['Information', 'Warning', 'Error']
         try:
@@ -56,6 +57,7 @@ class ClientThread(threading.Thread):
                 self.log_treeview.add_record((date, record.category.category,
                                               record.session.user.login, project, record.record,
                                               fg_color, bg_color, True))
+            self.sessions_treeview.update_treeview([['Anton', ['xxxx', 'date', 'host', 'platform', 'python']]])
             time.sleep(0.5)
             if np.random.randint(2) or 1:
                 category = self.categories[np.random.randint(len(self.categories))]
