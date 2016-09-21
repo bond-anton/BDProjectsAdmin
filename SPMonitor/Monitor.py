@@ -56,8 +56,8 @@ class ClientThread(threading.Thread):
                 self.log_treeview.add_record((date, record.category.category,
                                               record.session.user.login, project, record.record,
                                               fg_color, bg_color, True))
-            time.sleep(2)
-            if np.random.randint(2):
+            time.sleep(0.5)
+            if np.random.randint(2) or 1:
                 category = self.categories[np.random.randint(len(self.categories))]
                 self.client.user_manager.log_manager.log_record('Test %s log message' % category, category=category)
         self.client.user_manager.sign_out()
