@@ -27,7 +27,7 @@ class SessionsTreeView(Gtk.Box):
         self.scrolled_window.add(self.treeview)
         self.scrolled_window_pos = 0
 
-        self.update_treeview([['Anton', ['xxxx', 'date', 'host', 'platform', 'python']]])
+        self.treeview.connect('button_press_event', self.mouse_click)
 
         self.pack_start(self.scrolled_window, True, True, 0)
 
@@ -38,7 +38,7 @@ class SessionsTreeView(Gtk.Box):
         while row_iter is not None:
             user_name = self.sessions_treestore[row_iter][0]
             user_found = False
-            print('User:', self.sessions_treestore[row_iter][0])
+            #print('User:', self.sessions_treestore[row_iter][0])
             for i in range(len(list(treeview))):
                 if treeview[i][0] == user_name:
                     user_found = True
@@ -52,7 +52,7 @@ class SessionsTreeView(Gtk.Box):
                     while child_iter is not None:
                         session_name = self.sessions_treestore[child_iter][0]
                         session_found = False
-                        print('\tSession:', self.sessions_treestore[child_iter][0])
+                        #print('\tSession:', self.sessions_treestore[child_iter][0])
                         for j in range(1, len(list(treeview[i]))):
                             if treeview[i][j][0] == session_name:
                                 session_found = True
@@ -88,3 +88,10 @@ class SessionsTreeView(Gtk.Box):
                 parent_iter = self.sessions_treestore.append(None, [user_name] + [None] * 4 + ['#000', '#fff', True])
                 for j in range(1, len(list(treeview[i]))):
                     self.sessions_treestore.append(parent_iter, list(treeview[i][j]) + ['#000', '#fff', True])
+
+    def mouse_click(self, treeview, event):
+        if event.button == 3:
+            path, model, x, y = treeview.get_path_at_pos(int(event.x), int(event.y))
+            # selection = treeview.get_selection()
+            # (model, iter) = selection.get_selected()
+            print(self.sessions_treestore[path][0])
