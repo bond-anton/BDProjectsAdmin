@@ -34,15 +34,57 @@ class SessionsTreeView(Gtk.Box):
     def update_treeview(self, treeview):
         # first delete removed roots
         row_iter = self.sessions_treestore.get_iter_first()
-        while row_iter:
-            print(self.sessions_treestore.get(row_iter))
+        user_name = None
+        while row_iter is not None:
+            user_name = self.sessions_treestore[row_iter][0]
+            user_found = False
+            print('User:', self.sessions_treestore[row_iter][0])
+            for i in range(len(list(treeview))):
+                if treeview[i][0] == user_name:
+                    user_found = True
+                    break
+            if not user_found:
+                #  delete whole root
+                self.sessions_treestore.remove(row_iter)
+            else:
+                if self.sessions_treestore.iter_has_child(row_iter):
+                    child_iter = self.sessions_treestore.iter_children(row_iter)
+                    while child_iter is not None:
+                        session_name = self.sessions_treestore[child_iter][0]
+                        session_found = False
+                        print('\tSession:', self.sessions_treestore[child_iter][0])
+                        for j in range(1, len(list(treeview[i]))):
+                            if treeview[i][j][0] == session_name:
+                                session_found = True
+                                break
+                        if not session_found:
+                            #  delete session
+                            self.sessions_treestore.remove(child_iter)
+                        child_iter = self.sessions_treestore.iter_next(child_iter)
+                    for j in range(1, len(list(treeview[i]))):
+                        session_name = treeview[i][j][0]
+                        session_found = False
+                        child_iter = self.sessions_treestore.iter_children(row_iter)
+                        while child_iter is not None:
+                            if self.sessions_treestore[child_iter][0] == session_name:
+                                session_found = True
+                                break
+                            child_iter = self.sessions_treestore.iter_next(child_iter)
+                        if not session_found:
+                            #  append session
+                            self.sessions_treestore.append(row_iter, list(treeview[i][j]) + ['#000', '#fff', True])
             row_iter = self.sessions_treestore.iter_next(row_iter)
 
         for i in range(len(list(treeview))):
-
-            parent_iter = self.sessions_treestore.append(None, [treeview[i][0]] + [None] * 4 + ['#000', '#fff', True])
-            for j in range(1, len(list(treeview[i]))):
-                self.sessions_treestore.append(parent_iter, list(treeview[i][j]) + ['#000', '#fff', True])
-
-        for item in self.sessions_treestore:
-            print(item)
+            user_name = treeview[i][0]
+            user_found = False
+            row_iter = self.sessions_treestore.get_iter_first()
+            while row_iter is not None:
+                if self.sessions_treestore[row_iter][0] == user_name:
+                    user_found = True
+                    break
+                row_iter = self.sessions_treestore.iter_next(row_iter)
+            if not user_found:
+                parent_iter = self.sessions_treestore.append(None, [user_name] + [None] * 4 + ['#000', '#fff', True])
+                for j in range(1, len(list(treeview[i]))):
+                    self.sessions_treestore.append(parent_iter, list(treeview[i][j]) + ['#000', '#fff', True])

@@ -7,6 +7,7 @@ import threading
 
 from ScientificProjects.Client import Client
 from ScientificProjects.Entities.Log import Log
+from ScientificProjects.Entities.Session import Session
 
 
 class ClientThread(threading.Thread):
@@ -57,7 +58,17 @@ class ClientThread(threading.Thread):
                 self.log_treeview.add_record((date, record.category.category,
                                               record.session.user.login, project, record.record,
                                               fg_color, bg_color, True))
-            self.sessions_treeview.update_treeview([['Anton', ['xxxx', 'date', 'host', 'platform', 'python']]])
+            q = self.client.session.query(Session).filter(Session.active == 1)
+            results = q.all()
+            treeview_data = []
+            for record in results:
+                date = record.opened.replace(tzinfo=timezone('UTC')) + self.dst_offset
+                date = date.strftime('%Y-%m-%d %H:%M:%S')
+                data_row = [record.user.login,
+                            [record.token, date, record.host, record.platform, record.python]]
+                treeview_data.append(data_row)
+            # print(treeview_data)
+            self.sessions_treeview.update_treeview(treeview_data)
             time.sleep(0.5)
             if np.random.randint(2) or 1:
                 category = self.categories[np.random.randint(len(self.categories))]
