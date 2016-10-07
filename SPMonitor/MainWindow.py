@@ -10,6 +10,9 @@ from SPMonitor.Notebook import Notebook
 class MainWindow(Gtk.ApplicationWindow):
 
     def __init__(self, *args, **kwargs):
+        for key in ['application']:
+            if key in kwargs:
+                setattr(self, key, kwargs[key])
         super(MainWindow, self).__init__(*args, **kwargs)
         self.set_default_size(640, 480)
         # This will be in the windows group and have the "win" prefix

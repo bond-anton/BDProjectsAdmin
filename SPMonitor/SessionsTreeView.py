@@ -29,7 +29,26 @@ class SessionsTreeView(Gtk.Box):
 
         self.treeview.connect('button_press_event', self.mouse_click)
 
+        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
+        hbox.set_border_width(6)
+
+        button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
+        button = Gtk.Button()
+        grid = Gtk.Grid()
+        grid.set_column_spacing(5)
+        img = Gtk.Image.new_from_icon_name('system-log-out', Gtk.IconSize.BUTTON)
+        label = Gtk.Label('Log off user')
+        grid.attach(img, 0, 0, 1, 1)
+        grid.attach(label, 1, 0, 1, 1)
+        grid.show_all()
+        button.add(grid)
+        button.connect('clicked', self.on_log_off_button_click)
+        button_box.pack_start(button, False, True, 0)
+
+        hbox.pack_start(button_box, False, True, 0)
+
         self.pack_start(self.scrolled_window, True, True, 0)
+        self.pack_start(hbox, False, False, 0)
 
     def update_treeview(self, treeview):
         # first delete removed roots
@@ -95,3 +114,18 @@ class SessionsTreeView(Gtk.Box):
             # selection = treeview.get_selection()
             # (model, iter) = selection.get_selected()
             print(self.sessions_treestore[path][0])
+
+    def on_log_off_button_click(self, widget):
+        app_window = self.get_toplevel()
+        print(app_window.application.client)
+        try:
+            selection = self.treeview.get_selection()
+            model, path = selection.get_selected()
+            print(self.sessions_treestore[path][0])
+        except TypeError:
+            dialog = Gtk.MessageDialog(app_window, 0, Gtk.MessageType.INFO,
+                                       Gtk.ButtonsType.OK, 'Select users or sessions')
+            dialog.format_secondary_text(
+                'Please select users or individual sessions in the sessions list first.')
+            dialog.run()
+            dialog.destroy()
