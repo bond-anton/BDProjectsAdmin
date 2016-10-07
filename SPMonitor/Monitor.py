@@ -69,8 +69,8 @@ class ClientThread(threading.Thread):
                 treeview_data.append(data_row)
             # print(treeview_data)
             self.sessions_treeview.update_treeview(treeview_data)
-            time.sleep(0.5)
-            if np.random.randint(2) or 1:
+            time.sleep(2)
+            if np.random.randint(2):
                 category = self.categories[np.random.randint(len(self.categories))]
                 self.client.user_manager.log_manager.log_record('Test %s log message' % category, category=category)
         self.client.user_manager.sign_out()

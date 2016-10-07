@@ -14,7 +14,7 @@ class MainWindow(Gtk.ApplicationWindow):
             if key in kwargs:
                 setattr(self, key, kwargs[key])
         super(MainWindow, self).__init__(*args, **kwargs)
-        self.set_default_size(640, 480)
+        self.set_default_size(960, 480)
         # This will be in the windows group and have the "win" prefix
         max_action = Gio.SimpleAction.new_stateful("maximize", None,
                                                    GLib.Variant.new_boolean(False))
