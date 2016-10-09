@@ -3,7 +3,10 @@ from __future__ import division, print_function
 from os import pardir
 from os.path import dirname, realpath, join, isfile
 
-import time
+try:
+    from Queue import Queue
+except ImportError:
+    from queue import Queue
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -21,6 +24,8 @@ class SPMApplication(Gtk.Application):
         super(SPMApplication, self).__init__(*args, application_id="org.projectx.spmonitor",
                                              flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE,
                                              **kwargs)
+        self.logoff_users_queue = Queue()
+        self.logoff_sessions_queue = Queue()
         self.client = None
         self.window = None
 
@@ -110,7 +115,9 @@ class SPMApplication(Gtk.Application):
             try:
                 self.client = ClientThread(config_file_name=self.config_file_name,
                                            log_treeview=self.window.notebook.logs_treeview,
-                                           sessions_treeview=self.window.notebook.sessions_treeview)
+                                           sessions_treeview=self.window.notebook.sessions_treeview,
+                                           logoff_users_queue=self.logoff_users_queue,
+                                           logoff_sessions_queue=self.logoff_sessions_queue)
                 self.client.start()
             except ValueError:
                 print('Config file error reported by ClientThread')

@@ -4,21 +4,23 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
+from ScientificProjects.Entities.Session import Session
+
 
 class SessionsTreeView(Gtk.Box):
 
     def __init__(self):
         super(SessionsTreeView, self).__init__(orientation=Gtk.Orientation.VERTICAL, spacing=10)
-        column_titles = ['User (token)', 'Opened', 'Host', 'Platform', 'Python']
+        column_titles = ['User (token)', 'Opened', 'Host', 'Platform', 'Python', 'Project']
 
-        self.sessions_treestore = Gtk.TreeStore(str, str, str, str, str, str, str, bool)
+        self.sessions_treestore = Gtk.TreeStore(str, str, str, str, str, str, str, str, bool)
 
         self.treeview = Gtk.TreeView(self.sessions_treestore)
 
         for i, column_title in enumerate(column_titles):
             renderer = Gtk.CellRendererText()
             column = Gtk.TreeViewColumn(column_title, renderer, text=i,
-                                        foreground=5, background=6, foreground_set=7, background_set=7)
+                                        foreground=6, background=7, foreground_set=8, background_set=8)
             self.treeview.append_column(column)
 
         # setting up the layout, putting the treeview in a scrollwindow, and the buttons in a row
@@ -34,14 +36,12 @@ class SessionsTreeView(Gtk.Box):
 
         button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         button = Gtk.Button()
+        button.set_label('Close session')
         grid = Gtk.Grid()
         grid.set_column_spacing(5)
-        img = Gtk.Image.new_from_icon_name('system-log-out', Gtk.IconSize.BUTTON)
-        label = Gtk.Label('Log off user')
-        grid.attach(img, 0, 0, 1, 1)
-        grid.attach(label, 1, 0, 1, 1)
-        grid.show_all()
-        button.add(grid)
+        img = Gtk.Image.new_from_icon_name('window-close', Gtk.IconSize.BUTTON)
+        button.set_image(img)
+        button.set_always_show_image(True)
         button.connect('clicked', self.on_log_off_button_click)
         button_box.pack_start(button, False, True, 0)
 
@@ -53,16 +53,10 @@ class SessionsTreeView(Gtk.Box):
     def update_treeview(self, treeview):
         # first delete removed roots
         row_iter = self.sessions_treestore.get_iter_first()
-        user_name = None
         while row_iter is not None:
             user_name = self.sessions_treestore[row_iter][0]
-            user_found = False
-            #print('User:', self.sessions_treestore[row_iter][0])
-            for i in range(len(list(treeview))):
-                if treeview[i][0] == user_name:
-                    user_found = True
-                    break
-            if not user_found:
+            if user_name not in treeview:
+                print('User %s has no opened session. Removing from list' % user_name)
                 #  delete whole root
                 self.sessions_treestore.remove(row_iter)
             else:
@@ -71,17 +65,18 @@ class SessionsTreeView(Gtk.Box):
                     while child_iter is not None:
                         session_name = self.sessions_treestore[child_iter][0]
                         session_found = False
-                        #print('\tSession:', self.sessions_treestore[child_iter][0])
-                        for j in range(1, len(list(treeview[i]))):
-                            if treeview[i][j][0] == session_name:
+                        for j in range(len(list(treeview[user_name]))):
+                            if treeview[user_name][j][0] == session_name:
                                 session_found = True
+                                if self.sessions_treestore[child_iter][5] != treeview[user_name][j][5]:
+                                    self.sessions_treestore[child_iter][5] = treeview[user_name][j][5]
                                 break
                         if not session_found:
                             #  delete session
                             self.sessions_treestore.remove(child_iter)
                         child_iter = self.sessions_treestore.iter_next(child_iter)
-                    for j in range(1, len(list(treeview[i]))):
-                        session_name = treeview[i][j][0]
+                    for j in range(len(list(treeview[user_name]))):
+                        session_name = treeview[user_name][j][0]
                         session_found = False
                         child_iter = self.sessions_treestore.iter_children(row_iter)
                         while child_iter is not None:
@@ -91,11 +86,11 @@ class SessionsTreeView(Gtk.Box):
                             child_iter = self.sessions_treestore.iter_next(child_iter)
                         if not session_found:
                             #  append session
-                            self.sessions_treestore.append(row_iter, list(treeview[i][j]) + ['#000', '#fff', True])
+                            self.sessions_treestore.append(row_iter,
+                                                           list(treeview[user_name][j]) + ['#000', '#fff', True])
             row_iter = self.sessions_treestore.iter_next(row_iter)
 
-        for i in range(len(list(treeview))):
-            user_name = treeview[i][0]
+        for user_name in treeview.keys():
             user_found = False
             row_iter = self.sessions_treestore.get_iter_first()
             while row_iter is not None:
@@ -104,24 +99,43 @@ class SessionsTreeView(Gtk.Box):
                     break
                 row_iter = self.sessions_treestore.iter_next(row_iter)
             if not user_found:
-                parent_iter = self.sessions_treestore.append(None, [user_name] + [None] * 4 + ['#000', '#fff', True])
-                for j in range(1, len(list(treeview[i]))):
-                    self.sessions_treestore.append(parent_iter, list(treeview[i][j]) + ['#000', '#fff', True])
+                parent_iter = self.sessions_treestore.append(None, [user_name] + [None] * 5 + ['#000', '#fff', True])
+                for j in range(len(list(treeview[user_name]))):
+                    self.sessions_treestore.append(parent_iter, list(treeview[user_name][j]) + ['#000', '#fff', True])
 
     def mouse_click(self, treeview, event):
-        if event.button == 3:
+        if event.button == 1:
             path, model, x, y = treeview.get_path_at_pos(int(event.x), int(event.y))
             # selection = treeview.get_selection()
             # (model, iter) = selection.get_selected()
-            print(self.sessions_treestore[path][0])
+            print(self.sessions_treestore[path][:])
 
     def on_log_off_button_click(self, widget):
         app_window = self.get_toplevel()
-        print(app_window.application.client)
+        client = app_window.application
         try:
             selection = self.treeview.get_selection()
             model, path = selection.get_selected()
-            print(self.sessions_treestore[path][0])
+            dialog = Gtk.MessageDialog(app_window, 0, Gtk.MessageType.QUESTION,
+                                       Gtk.ButtonsType.YES_NO, 'Are you sure?')
+            if self.sessions_treestore[path][1]:
+                dialog.format_secondary_text(
+                    'You are about to close session #%s' % self.sessions_treestore[path][0])
+            else:
+                dialog.format_secondary_text(
+                    'You are about to close all active sessions of user @%s' % self.sessions_treestore[path][0])
+            response = dialog.run()
+            if response == Gtk.ResponseType.YES:
+                print("QUESTION dialog closed by clicking YES button")
+                if self.sessions_treestore[path][1]:
+                    print('Closing session:', self.sessions_treestore[path][0])
+                    client.logoff_sessions_queue.put(self.sessions_treestore[path][0])
+                else:
+                    print('Kick off user:', self.sessions_treestore[path][0])
+                    client.logoff_users_queue.put(self.sessions_treestore[path][0])
+            elif response == Gtk.ResponseType.NO:
+                print("QUESTION dialog closed by clicking NO button")
+            dialog.destroy()
         except TypeError:
             dialog = Gtk.MessageDialog(app_window, 0, Gtk.MessageType.INFO,
                                        Gtk.ButtonsType.OK, 'Select users or sessions')
