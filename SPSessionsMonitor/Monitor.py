@@ -40,8 +40,8 @@ class ClientThread(threading.Thread):
             self.dst_offset = self.std_offset
 
     def run(self):
-        time.sleep(2)
-        self.client.user_manager.sign_in('john_smith', 'secret_password')
+        #time.sleep(2)
+        #self.client.user_manager.sign_in('john_smith', 'secret_password')
         while not self.stop_request.isSet():
 
             try:
@@ -72,9 +72,9 @@ class ClientThread(threading.Thread):
                     treeview_data[record.user.login] = data_row
             self.sessions_treeview.update_treeview(treeview_data)
             time.sleep(2)
-            if np.random.randint(2):
-                self.client.user_manager.sign_in('john_smith', 'secret_password')
-                self.client.user_manager.project_manager.open_project('Super Project')
+            #if np.random.randint(2):
+            #    self.client.user_manager.sign_in('john_smith', 'secret_password')
+            #    self.client.user_manager.project_manager.open_project('Super Project')
         self.client.session.close()
         self.client.engine.dispose()
 
