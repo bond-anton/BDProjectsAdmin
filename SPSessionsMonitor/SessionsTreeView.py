@@ -29,7 +29,7 @@ class SessionsTreeView(Gtk.Box):
         self.scrolled_window.add(self.treeview)
         self.scrolled_window_pos = 0
 
-        self.treeview.connect('button_press_event', self.mouse_click)
+        #self.treeview.connect('button_press_event', self.mouse_click)
 
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         hbox.set_border_width(6)
@@ -103,12 +103,12 @@ class SessionsTreeView(Gtk.Box):
                 for j in range(len(list(treeview[user_name]))):
                     self.sessions_treestore.append(parent_iter, list(treeview[user_name][j]) + ['#000', '#fff', True])
 
-    def mouse_click(self, treeview, event):
-        if event.button == 1:
-            path, model, x, y = treeview.get_path_at_pos(int(event.x), int(event.y))
+    #def mouse_click(self, treeview, event):
+        #if event.button == 1:
+            #path, model, x, y = treeview.get_path_at_pos(int(event.x), int(event.y))
             # selection = treeview.get_selection()
             # (model, iter) = selection.get_selected()
-            print(self.sessions_treestore[path][:])
+            #print(self.sessions_treestore[path][:])
 
     def on_log_off_button_click(self, widget):
         app_window = self.get_toplevel()
