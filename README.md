@@ -1,20 +1,21 @@
-# SPMonitor
+# SPAdminTools
 
-**SPMonitor** is a small GTK3 GUI written in python to monitor *ScientificProjects* DB activity.
+**SPAdminTools** is a kit of small GTK3 GUI utils written in python to administrate and monitor
+ *ScientificProjects* DB activity.
 
 
 ## Installation
 
-No installation is required. Just run
+No installation is required. Just run tools in  the root directory of the project
 ```shell
-python SPM.py
+python LogMonitor.py
 ```
 
 ## Usage
 
-SPMonitor stores the connection details in the .ini config file.
+SPAdminTools store the connection details in the .ini config file.
 All should be pretty much self explanatory.
 
 ## License
 
-SPMonitor is free open source software licensed under Apache license version 2.0
+SPAdminTools is free open source software licensed under Apache license version 2.0
