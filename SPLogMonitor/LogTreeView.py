@@ -50,7 +50,7 @@ class LogTreeView(Gtk.Box):
             button.set_label(log_type)
             button.set_image(img)
             button.set_always_show_image(True)
-            button.set_active(True)
+            button.set_active(False)
             self.buttons[log_type] = button
             button.connect('clicked', self.on_selection_button_clicked)
             button_box.pack_start(button, False, True, 0)

@@ -4,7 +4,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import GLib, Gio, Gtk
 
-from SPMonitor.Notebook import Notebook
+from SPSessionsMonitor.SessionsTreeView import SessionsTreeView
 
 
 class MainWindow(Gtk.ApplicationWindow):
@@ -26,9 +26,9 @@ class MainWindow(Gtk.ApplicationWindow):
                      lambda obj, pspec: max_action.set_state(
                          GLib.Variant.new_boolean(obj.props.is_maximized)))
 
-        self.notebook = Notebook()
-        self.add(self.notebook)
-        self.set_default_icon_name('utilities-system-monitor')
+        self.sessions_treeview = SessionsTreeView()
+        self.add(self.sessions_treeview)
+        self.set_default_icon_name('system-users')
         self.show_all()
 
     def on_change_label_state(self, action, value):

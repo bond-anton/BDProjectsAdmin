@@ -1,7 +1,7 @@
 from __future__ import division, print_function
 
 from os import pardir
-from os.path import dirname, realpath, join, isfile
+from os.path import dirname, realpath, join
 
 try:
     from Queue import Queue
@@ -12,18 +12,17 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import GLib, Gio, Gtk
 
-from SPMonitor.MainWindow import MainWindow
-from SPMonitor.AboutWindow import AboutWindow, _version
-from SPMonitor.PreferencesDialog import PreferencesDialog
-from SPMonitor.Monitor import ClientThread
+from SPSessionsMonitor.MainWindow import MainWindow
+from SPSessionsMonitor.AboutWindow import AboutWindow
+from SPSessionsMonitor.PreferencesDialog import PreferencesDialog
+from SPSessionsMonitor.Monitor import ClientThread
 
 
-class SPMApplication(Gtk.Application):
+class SPSMApplication(Gtk.Application):
 
     def __init__(self, *args, **kwargs):
-        super(SPMApplication, self).__init__(*args, application_id="org.projectx.spmonitor",
-                                             flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE,
-                                             **kwargs)
+        super(SPSMApplication, self).__init__(*args, application_id="org.projectx.spuadmin",
+                                              **kwargs)
         self.logoff_users_queue = Queue()
         self.logoff_sessions_queue = Queue()
         self.client = None
@@ -63,22 +62,10 @@ class SPMApplication(Gtk.Application):
         if not self.window:
             # Windows are associated with the application
             # when the last one is closed the application shuts down
-            self.window = MainWindow(application=self, title="SPMonitor")
+            self.window = MainWindow(application=self, title="SPAdminTools")
             self.window.connect("delete-event", self.on_quit)
         self.window.present()
         self.restart_client_loop()
-
-    def do_command_line(self, command_line):
-        options = command_line.get_options_dict()
-        if options.contains("test"):
-            # This is printed on the main instance
-            print("Test argument recieved")
-        if options.contains("version"):
-            # This is printed on the main instance
-            print("SPMonitor v%s" % _version)
-        else:
-            self.activate()
-        return 0
 
     def on_about(self, action, param):
         about_dialog = AboutWindow(transient_for=self.window, modal=True)
@@ -114,8 +101,7 @@ class SPMApplication(Gtk.Application):
             print('Starting client loop')
             try:
                 self.client = ClientThread(config_file_name=self.config_file_name,
-                                           log_treeview=self.window.notebook.logs_treeview,
-                                           sessions_treeview=self.window.notebook.sessions_treeview,
+                                           sessions_treeview=self.window.sessions_treeview,
                                            logoff_users_queue=self.logoff_users_queue,
                                            logoff_sessions_queue=self.logoff_sessions_queue)
                 self.client.start()

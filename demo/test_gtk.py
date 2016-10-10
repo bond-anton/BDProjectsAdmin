@@ -4,7 +4,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
-from SPMonitor import MainWindow
+from SPLogMonitor import MainWindow
 
 win = MainWindow()
 win.connect("delete-event", Gtk.main_quit)
