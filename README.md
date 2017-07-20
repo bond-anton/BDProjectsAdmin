@@ -1,21 +1,21 @@
-# SPAdminTools
+# BDProjectsAdmin
 
-**SPAdminTools** is a kit of small GTK3 GUI utils written in python to administrate and monitor
- *ScientificProjects* DB activity.
+**BDProjectsAdmin** is a kit of small GTK3 GUI utils written in python to administrate and monitor
+ [BDProjects](https://github.com/bond-anton/BDProjects) DB activity.
 
 
 ## Installation
 
-No installation is required. Just run tools in  the root directory of the project
+No installation is required. Just run tools in  the root directory of the distribution
 ```shell
 python LogMonitor.py
 ```
 
 ## Usage
 
-SPAdminTools store the connection details in the .ini config file.
+BDProjectsAdmin store the connection details in the .ini config file.
 All should be pretty much self explanatory.
 
 ## License
 
-SPAdminTools is free open source software licensed under Apache license version 2.0
+BDProjectsAdmin is free open source software licensed under Apache license version 2.0

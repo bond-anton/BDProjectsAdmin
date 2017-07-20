@@ -4,7 +4,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import GLib, Gio, Gtk
 
-from SPSessionsMonitor.SessionsTreeView import SessionsTreeView
+from BDProjectsSessionsMonitor.SessionsTreeView import SessionsTreeView
 
 
 class MainWindow(Gtk.ApplicationWindow):

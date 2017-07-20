@@ -14,7 +14,7 @@ class AboutWindow(Gtk.AboutDialog):
 
     def __init__(self, *args, **kwargs):
         super(AboutWindow, self).__init__(*args, **kwargs)
-        self.set_program_name('SPLogMonitor')
+        self.set_program_name('BDProjectsLogMonitor')
         self.set_version(_version)
         self.set_logo_icon_name('utilities-system-monitor')
 

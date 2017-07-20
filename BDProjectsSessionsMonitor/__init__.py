@@ -1,0 +1,3 @@
+from __future__ import division, print_function
+from BDProjectsSessionsMonitor.Application import SPSMApplication
+from BDProjectsSessionsMonitor.AboutWindow import _version

@@ -1,25 +1,37 @@
 from __future__ import division, print_function
 
 from os import pardir
-from os.path import dirname, realpath, join, isfile
+from os.path import dirname, realpath, join
+
+try:
+    from Queue import Queue
+except ImportError:
+    from queue import Queue
 
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import GLib, Gio, Gtk
 
-from SPLogMonitor.MainWindow import MainWindow
-from SPLogMonitor.AboutWindow import AboutWindow, _version
-from SPLogMonitor.PreferencesDialog import PreferencesDialog
-from SPLogMonitor.Monitor import ClientThread
+from BDProjectsSessionsMonitor.MainWindow import MainWindow
+from BDProjectsSessionsMonitor.AboutWindow import AboutWindow
+from BDProjectsSessionsMonitor.PreferencesDialog import PreferencesDialog
+from BDProjectsSessionsMonitor.Monitor import ClientThread
 
 
-class SPLMApplication(Gtk.Application):
+class SPSMApplication(Gtk.Application):
 
     def __init__(self, *args, **kwargs):
-        super(SPLMApplication, self).__init__(*args, application_id="org.projectx.splogmonitor",
+        super(SPSMApplication, self).__init__(*args, application_id="org.projectx.spuadmin",
                                               **kwargs)
+        self.logoff_users_queue = Queue()
+        self.logoff_sessions_queue = Queue()
         self.client = None
         self.window = None
+
+        self.add_main_option("test", ord("t"), GLib.OptionFlags.NONE,
+                             GLib.OptionArg.NONE, "Command line test", None)
+        self.add_main_option("version", ord("v"), GLib.OptionFlags.NONE,
+                             GLib.OptionArg.NONE, "Print version", None)
 
         dir_path = join(dirname(realpath(__file__)), pardir)
         self.config_file_name = join(dir_path, 'config.ini')
@@ -50,7 +62,7 @@ class SPLMApplication(Gtk.Application):
         if not self.window:
             # Windows are associated with the application
             # when the last one is closed the application shuts down
-            self.window = MainWindow(application=self, title="SPLogMonitor")
+            self.window = MainWindow(application=self, title="SPAdminTools")
             self.window.connect("delete-event", self.on_quit)
         self.window.present()
         self.restart_client_loop()
@@ -89,7 +101,9 @@ class SPLMApplication(Gtk.Application):
             print('Starting client loop')
             try:
                 self.client = ClientThread(config_file_name=self.config_file_name,
-                                           log_treeview=self.window.logs_treeview)
+                                           sessions_treeview=self.window.sessions_treeview,
+                                           logoff_users_queue=self.logoff_users_queue,
+                                           logoff_sessions_queue=self.logoff_sessions_queue)
                 self.client.start()
             except ValueError:
                 print('Config file error reported by ClientThread')

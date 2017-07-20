@@ -4,7 +4,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import GLib, Gio, Gtk
 
-from SPLogMonitor.LogTreeView import LogTreeView
+from BDProjectsLogMonitor.LogTreeView import LogTreeView
 
 
 class MainWindow(Gtk.ApplicationWindow):

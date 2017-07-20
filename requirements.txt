@@ -1,3 +1,3 @@
+git+git://github.com/bond-anton/BDProjects.git#egg=BDProjects
 gi
-ScientificProjects
 pytz
