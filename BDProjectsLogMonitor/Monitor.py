@@ -4,8 +4,8 @@ import datetime
 from pytz import timezone
 import threading
 
-from ScientificProjects.Client import Client
-from ScientificProjects.Entities.Log import Log
+from BDProjects.Client import Client
+from BDProjects.Entities.Log import Log
 
 
 class ClientThread(threading.Thread):

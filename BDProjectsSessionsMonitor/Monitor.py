@@ -10,9 +10,9 @@ try:
 except ImportError:
     from queue import Queue, Empty
 
-from ScientificProjects.Client import Client
-from ScientificProjects.Entities.User import User
-from ScientificProjects.Entities.Session import Session
+from BDProjects.Client import Client
+from BDProjects.Entities.User import User
+from BDProjects.Entities.Session import Session
 
 
 class ClientThread(threading.Thread):
